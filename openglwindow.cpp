@@ -59,14 +59,12 @@ void OpenGLWindow::initializeGL() {
 
   // Create program
   m_program = createProgramFromFile(getAssetsPath() + "lookat.vert",
-                                    getAssetsPath() + "lookat.frag");
-
-                              
+                                    getAssetsPath() + "lookat.frag");                              
 
   m_ground.initializeGL(m_program);
 
   // Load model
-  loadModelFromFile(getAssetsPath() + "geosphere.obj");
+  loadModelFromFile(getAssetsPath() + "Ball OBJ.obj");
   loadModelFromFile(getAssetsPath() + "The Limited 4.obj");
  // loadModelFromFile(getAssetsPath() + "anime character(high).obj");
   
@@ -101,6 +99,37 @@ void OpenGLWindow::initializeGL() {
   abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+
+  // Generate VBO
+  abcg::glGenBuffers(1, &m_VBO1);
+  abcg::glBindBuffer(GL_ARRAY_BUFFER, m_VBO1);
+  abcg::glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices[0]) * m_vertices.size(),
+                     m_vertices.data(), GL_STATIC_DRAW);
+  abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  // Generate EBO
+  abcg::glGenBuffers(1, &m_EBO1);
+  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO1);
+  abcg::glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof(m_indices[0]) * m_indices.size(), m_indices.data(),
+                     GL_STATIC_DRAW);
+  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  // Create VAO
+  abcg::glGenVertexArrays(1, &m_VAO1);
+
+  // Bind vertex attributes to current VAO
+  abcg::glBindVertexArray(m_VAO1);
+
+  abcg::glBindBuffer(GL_ARRAY_BUFFER, m_VBO1);
+  const GLint positionAttribute1{
+      abcg::glGetAttribLocation(m_program, "inPosition1")};
+  abcg::glEnableVertexAttribArray(positionAttribute1);
+  abcg::glVertexAttribPointer(positionAttribute1, 3, GL_FLOAT, GL_FALSE,
+                              sizeof(Vertex), nullptr);
+  abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO1);
 
   // End of binding to current VAO
   abcg::glBindVertexArray(0);
@@ -181,6 +210,14 @@ void OpenGLWindow::paintGL() {
       abcg::glGetUniformLocation(m_program, "modelMatrix")};
   const GLint colorLoc{abcg::glGetUniformLocation(m_program, "color")};
 
+  const GLint viewMatrixLoc1{
+      abcg::glGetUniformLocation(m_program, "viewMatrix1")};
+  const GLint projMatrixLoc1{
+      abcg::glGetUniformLocation(m_program, "projMatrix1")};
+  const GLint modelMatrixLoc1{
+      abcg::glGetUniformLocation(m_program, "modelMatrix1")};
+  const GLint colorLoc1{abcg::glGetUniformLocation(m_program, "color")};
+
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
   abcg::glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE,
@@ -188,20 +225,27 @@ void OpenGLWindow::paintGL() {
   abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE,
                            &m_camera.m_projMatrix[0][0]);
 
+  abcg::glUniformMatrix4fv(viewMatrixLoc1, 1, GL_FALSE,
+                           &m_camera.m_viewMatrix[0][0]);
+  abcg::glUniformMatrix4fv(projMatrixLoc1, 1, GL_FALSE,
+                           &m_camera.m_projMatrix[0][0]);
+
   abcg::glBindVertexArray(m_VAO);
+  abcg::glBindVertexArray(m_VAO1);
 
-  // Draw white bunny
-  glm::mat4 model{1.0f};
-  model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 0.0f));
-  model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1, 0));
-  model = glm::scale(model, glm::vec3(0.02f));
+  // Draw RED BOLA
+  glm::mat4 model1{1.0f};
+  model1 = glm::translate(model1, glm::vec3(-1.0f, 0.0f, 0.0f));
+  model1 = glm::rotate(model1, glm::radians(90.0f), glm::vec3(0, 1, 0));
+  model1 = glm::scale(model1, glm::vec3(0.000002f));
 
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+  abcg::glUniformMatrix4fv(modelMatrixLoc1, 1, GL_FALSE, &model1[0][0]);
+  abcg::glUniform4f(colorLoc1,  1.0f, 0.25f, 0.25f, 1.0f);
   abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
                        nullptr);
 
-  // Draw yellow bunny
+  // Draw yellow BONEQUINHO
+  glm::mat4 model{1.0f};
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
   model = glm::scale(model, glm::vec3(0.02f));
@@ -255,6 +299,9 @@ void OpenGLWindow::terminateGL() {
   abcg::glDeleteBuffers(1, &m_EBO);
   abcg::glDeleteBuffers(1, &m_VBO);
   abcg::glDeleteVertexArrays(1, &m_VAO);
+  abcg::glDeleteBuffers(1, &m_EBO1);
+  abcg::glDeleteBuffers(1, &m_VBO1);
+  abcg::glDeleteVertexArrays(1, &m_VAO1);
 }
 
 void OpenGLWindow::update() {
