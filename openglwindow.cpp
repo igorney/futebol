@@ -61,11 +61,13 @@ void OpenGLWindow::initializeGL() {
   m_program = createProgramFromFile(getAssetsPath() + "lookat.vert",
                                     getAssetsPath() + "lookat.frag");
 
+                              
+
   m_ground.initializeGL(m_program);
 
   // Load model
-  m_modelGeosphere.loadModelFromFile(getAssetsPath() + "geosphere.obj");
-  m_modelBoneco.loadModelFromFile(getAssetsPath() + "The Limited 4.obj");
+  loadModelFromFile(getAssetsPath() + "geosphere.obj");
+  loadModelFromFile(getAssetsPath() + "The Limited 4.obj");
  // loadModelFromFile(getAssetsPath() + "anime character(high).obj");
   
 
@@ -200,14 +202,14 @@ void OpenGLWindow::paintGL() {
                        nullptr);
 
   // Draw yellow bunny
-  //model = glm::mat4(1.0);
-  //model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
-  //model = glm::scale(model, glm::vec3(0.02f));
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
+  model = glm::scale(model, glm::vec3(0.02f));
 
-  //abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  //abcg::glUniform4f(colorLoc, 1.0f, 0.8f, 0.0f, 1.0f);
-  //::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
-  //                     nullptr);
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 1.0f, 0.8f, 0.0f, 1.0f);
+  abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
+                       nullptr);
 
   // Draw blue bunny
   //model = glm::mat4(1.0);
@@ -218,7 +220,7 @@ void OpenGLWindow::paintGL() {
   //abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   //abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);
   //abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
-   //                    nullptr);
+  //                     nullptr);
 
   // Draw red bunny
   //model = glm::mat4(1.0);
