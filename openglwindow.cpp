@@ -36,7 +36,7 @@ void OpenGLWindow::handleEvent(SDL_Event& ev) {
 }
 
 void OpenGLWindow::initializeGL() {
-  abcg::glClearColor(0, 0, 0, 1);
+  abcg::glClearColor(0, 0.08, 0, 1);
 
   // Enable depth buffering
   abcg::glEnable(GL_DEPTH_TEST);
@@ -46,11 +46,14 @@ void OpenGLWindow::initializeGL() {
                                     getAssetsPath() + "depth.frag");
 
   // Load model
-  m_model.loadObj(getAssetsPath() + "bunny.obj");
+  m_modelGeosphere.loadObj(getAssetsPath() + "geosphere.obj");
+  m_modelBunny.loadObj(getAssetsPath() + "bunny.obj");
 
-  m_model.setupVAO(m_program);
+  m_modelGeosphere.setupVAO(m_program);
+  m_modelBunny.setupVAO(m_program);
 
-  m_trianglesToDraw = m_model.getNumTriangles();
+  m_trianglesToDraw = m_modelGeosphere.getNumTriangles();
+  m_trianglesToDraw = m_modelBunny.getNumTriangles();
 }
 
 void OpenGLWindow::paintGL() {
@@ -76,11 +79,23 @@ void OpenGLWindow::paintGL() {
   abcg::glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, &m_viewMatrix[0][0]);
   abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE, &m_projMatrix[0][0]);
 
-  // Set uniform variables of the current object
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &m_modelMatrix[0][0]);
-  abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);  // White
 
-  m_model.render(m_trianglesToDraw);
+  glm::mat4 model{1.0f};
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(1.0f, 0.0f, -2.0f));
+  model = glm::rotate(model, glm::radians(-210.0f), glm::vec3(0, 1, 0));
+  model = glm::scale(model, glm::vec3(0.6f));
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 1.0f, 0.8f, 0.0f, 1.0f);
+  m_modelGeosphere.render(-1);
+
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.5f));
+  model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+  model = glm::scale(model, glm::vec3(0.6f));
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+  m_modelBunny.render(-1);
 
   abcg::glUseProgram(0);
 }
@@ -88,66 +103,12 @@ void OpenGLWindow::paintGL() {
 void OpenGLWindow::paintUI() {
   abcg::OpenGLWindow::paintUI();
 
-  // Create window for slider
-  {
-    ImGui::SetNextWindowPos(ImVec2(5, m_viewportHeight - 94));
-    ImGui::SetNextWindowSize(ImVec2(m_viewportWidth - 10, -1));
-    ImGui::Begin("Slider window", nullptr, ImGuiWindowFlags_NoDecoration);
-
-    // Create a slider to control the number of rendered triangles
-    {
-      // Slider will fill the space of the window
-      ImGui::PushItemWidth(m_viewportWidth - 25);
-
-      ImGui::SliderInt("", &m_trianglesToDraw, 0, m_model.getNumTriangles(),
-                       "%d triangles");
-
-      ImGui::PopItemWidth();
-    }
-
-    ImGui::End();
-  }
-
   // Create a window for the other widgets
   {
-    const auto widgetSize{ImVec2(222, 90)};
+    const auto widgetSize{ImVec2(200, 90)};
     ImGui::SetNextWindowPos(ImVec2(m_viewportWidth - widgetSize.x - 5, 5));
     ImGui::SetNextWindowSize(widgetSize);
     ImGui::Begin("Widget window", nullptr, ImGuiWindowFlags_NoDecoration);
-
-    static bool faceCulling{};
-    ImGui::Checkbox("Back-face culling", &faceCulling);
-
-    if (faceCulling) {
-      abcg::glEnable(GL_CULL_FACE);
-    } else {
-      abcg::glDisable(GL_CULL_FACE);
-    }
-
-    // CW/CCW combo box
-    {
-      static std::size_t currentIndex{};
-      const std::vector<std::string> comboItems{"CCW", "CW"};
-
-      ImGui::PushItemWidth(120);
-      if (ImGui::BeginCombo("Front face",
-                            comboItems.at(currentIndex).c_str())) {
-        for (const auto index : iter::range(comboItems.size())) {
-          const bool isSelected{currentIndex == index};
-          if (ImGui::Selectable(comboItems.at(index).c_str(), isSelected))
-            currentIndex = index;
-          if (isSelected) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-      }
-      ImGui::PopItemWidth();
-
-      if (currentIndex == 0) {
-        abcg::glFrontFace(GL_CCW);
-      } else {
-        abcg::glFrontFace(GL_CW);
-      }
-    }
 
     // Projection combo box
     {
@@ -188,16 +149,17 @@ void OpenGLWindow::resizeGL(int width, int height) {
 }
 
 void OpenGLWindow::terminateGL() {
-  m_model.terminateGL();
+  m_modelGeosphere.terminateGL();
+  m_modelBunny.terminateGL();
   abcg::glDeleteProgram(m_program);
 }
 
 void OpenGLWindow::update() {
   //m_modelMatrix = m_camera.getRotation();
 
-  //m_viewMatrix =
-  //    glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f + m_zoom),
-  //                glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  m_viewMatrix =
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f),
+                  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
   const float deltaTime{static_cast<float>(getDeltaTime())};
 
