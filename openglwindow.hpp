@@ -1,9 +1,13 @@
 #ifndef OPENGLWINDOW_HPP_
 #define OPENGLWINDOW_HPP_
 
+#include <vector>
+
 #include "abcg.hpp"
-#include "model.hpp"
 #include "camera.hpp"
+#include "ground.hpp"
+#include "model.hpp"
+
 
 class OpenGLWindow : public abcg::OpenGLWindow {
  protected:
@@ -14,14 +18,17 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   void resizeGL(int width, int height) override;
   void terminateGL() override;
 
- private:
+ private:  
   GLuint m_program{};
 
   int m_viewportWidth{};
   int m_viewportHeight{};
 
-  Model m_modelBunny;
-  Model m_modelGeosphere;
+  Model m_modelBola;
+  Model m_modelJogador;
+  Model m_modelAviao;
+  Model m_modelJuiz;
+  Model m_modelArvore;
 
   int m_trianglesToDraw{};
 
@@ -30,10 +37,12 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   float m_truckSpeed{0.0f};
   float m_panSpeed{0.0f};
 
-  glm::mat4 m_modelMatrix{1.0f};
-  glm::mat4 m_viewMatrix{1.0f};
-  glm::mat4 m_projMatrix{1.0f};
+  Ground m_ground;
 
+  std::vector<Vertex> m_vertices;
+  std::vector<GLuint> m_indices;   
+
+  void loadModelFromFile(std::string_view path);  
   void update();
 };
 

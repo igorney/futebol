@@ -16,13 +16,9 @@ struct Vertex {
 class Model {
  public:
   void loadObj(std::string_view path, bool standardize = true);
-  void render(int numTriangles = -1) const;
+  void render();
   void setupVAO(GLuint program);
-  void terminateGL();
-
-  [[nodiscard]] int getNumTriangles() const {
-    return static_cast<int>(m_indices.size()) / 3;
-  }
+  void terminateGL();  
 
  private:
   GLuint m_VAO{};

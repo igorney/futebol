@@ -1,4 +1,3 @@
-project(viewer1)
-add_executable(${PROJECT_NAME} main.cpp model.cpp openglwindow.cpp
-                               camera.cpp)
+project(lookat)
+add_executable(${PROJECT_NAME} camera.cpp ground.cpp main.cpp openglwindow.cpp model.cpp)
 enable_abcg(${PROJECT_NAME})

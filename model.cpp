@@ -99,14 +99,10 @@ void Model::loadObj(std::string_view path, bool standardize) {
   createBuffers();
 }
 
-void Model::render(int numTriangles) const {
-  abcg::glBindVertexArray(m_VAO);
+void Model::render() {
+  abcg::glBindVertexArray(m_VAO);  
 
-  const auto numIndices{(numTriangles < 0) ? m_indices.size()
-                                           : numTriangles * 3};
-
-  abcg::glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices),
-                       GL_UNSIGNED_INT, nullptr);
+  abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);  
 
   abcg::glBindVertexArray(0);
 }
