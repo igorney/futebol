@@ -86,7 +86,6 @@ void OpenGLWindow::paintGL() {
       abcg::glGetUniformLocation(m_program, "projMatrix")};
   const GLint modelMatrixLoc{
       abcg::glGetUniformLocation(m_program, "modelMatrix")};
-<<<<<<< HEAD
   const GLint colorLoc{abcg::glGetUniformLocation(m_program, "color")};  
 
   // Set uniform variables for viewMatrix and projMatrix
@@ -96,14 +95,6 @@ void OpenGLWindow::paintGL() {
   abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE,
                            &m_camera.m_projMatrix[0][0]);
   
-=======
-  const GLint colorLoc{abcg::glGetUniformLocation(m_program, "color")};
-
-  // Set uniform variables used by every scene object
-  abcg::glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, &m_viewMatrix[0][0]);
-  abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE, &m_projMatrix[0][0]);
-abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
->>>>>>> 2ad5fd08b54ec0972ff680a5f2a8410a43da1bf7
 
   // bola vermelha
   glm::mat4 model{1.0f};
@@ -128,14 +119,9 @@ abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
   model = glm::scale(model, glm::vec3(0.6f));
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-<<<<<<< HEAD
   abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);   
   m_modelJogador.render();                  
   
-=======
-  abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);  // White
-  m_modelGeosphere.render(-1);
->>>>>>> 2ad5fd08b54ec0972ff680a5f2a8410a43da1bf7
 
   // time verde
   model = glm::mat4(1.0);
@@ -213,10 +199,7 @@ void OpenGLWindow::paintUI() { abcg::OpenGLWindow::paintUI(); }
 void OpenGLWindow::resizeGL(int width, int height) {
   m_viewportWidth = width;
   m_viewportHeight = height;
-<<<<<<< HEAD
 
-=======
->>>>>>> 2ad5fd08b54ec0972ff680a5f2a8410a43da1bf7
   m_camera.computeProjectionMatrix(width, height);
 }
 
