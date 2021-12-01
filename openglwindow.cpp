@@ -53,11 +53,11 @@ void OpenGLWindow::initializeGL() {
 
   m_ground.initializeGL(m_program);
 
-  m_modelBola.loadObj(getAssetsPath() + "bola.obj");
-  m_modelJogador.loadObj(getAssetsPath() + "jogador.obj");
-  m_modelAviao.loadObj(getAssetsPath() + "aviao.obj");
-  m_modelJuiz.loadObj(getAssetsPath() + "juiz.obj");
-  m_modelArvore.loadObj(getAssetsPath() + "arvore.obj");  
+  m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
+  m_modelJogador.loadObj(getAssetsPath() + "jogador/jogador.obj");
+  m_modelAviao.loadObj(getAssetsPath() + "aviao/aviao.obj");
+  m_modelJuiz.loadObj(getAssetsPath() + "juiz/juiz.obj");
+  m_modelArvore.loadObj(getAssetsPath() + "arvore/arvore.obj");  
 
   m_modelBola.setupVAO(m_program);
   m_modelJogador.setupVAO(m_program);
