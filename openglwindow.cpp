@@ -51,7 +51,7 @@ void OpenGLWindow::initializeGL() {
   m_program = createProgramFromFile(getAssetsPath() + "lookat.vert",
                                     getAssetsPath() + "lookat.frag");                              
 
-  initializeSound(getAssetsPath() + "sons/hino.wav");
+  //initializeSound(getAssetsPath() + "sons/hino.wav");
   m_ground.initializeGL(m_program);
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
@@ -64,7 +64,9 @@ void OpenGLWindow::initializeGL() {
   m_modelJogador.setupVAO(m_program);
   m_modelAviao.setupVAO(m_program);
   m_modelJuiz.setupVAO(m_program);
-  m_modelArvore.setupVAO(m_program);    
+  m_modelArvore.setupVAO(m_program);  
+
+  initializeSound(getAssetsPath() + "sons/hino.wav");  
 
   resizeGL(getWindowSettings().width, getWindowSettings().height);
 }
