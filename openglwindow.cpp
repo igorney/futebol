@@ -51,6 +51,7 @@ void OpenGLWindow::initializeGL() {
   m_program = createProgramFromFile(getAssetsPath() + "lookat.vert",
                                     getAssetsPath() + "lookat.frag");                              
 
+  initializeSound(getAssetsPath() + "sons/hino.wav");
   m_ground.initializeGL(m_program);
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
@@ -66,6 +67,29 @@ void OpenGLWindow::initializeGL() {
   m_modelArvore.setupVAO(m_program);    
 
   resizeGL(getWindowSettings().width, getWindowSettings().height);
+}
+
+void OpenGLWindow::initializeSound(std::string path) {
+  // clean up previous sounds
+  SDL_CloseAudioDevice(m_deviceId);
+  SDL_FreeWAV(m_wavBuffer);
+
+  SDL_AudioSpec wavSpec;
+  Uint32 wavLength;
+
+  if (SDL_LoadWAV(path.c_str(), &wavSpec, &m_wavBuffer, &wavLength) == nullptr) {
+    throw abcg::Exception{abcg::Exception::Runtime(
+        fmt::format("Failed to load sound {} ({})", path, SDL_GetError()))};
+  }
+
+  m_deviceId = SDL_OpenAudioDevice(nullptr, 0, &wavSpec, nullptr, 0);
+
+  if (SDL_QueueAudio(m_deviceId, m_wavBuffer, wavLength) < 0) {
+    throw abcg::Exception{abcg::Exception::Runtime(
+        fmt::format("Failed to play sound {} ({})", path, SDL_GetError()))};
+  }
+
+  SDL_PauseAudioDevice(m_deviceId, 0);
 }
 
 

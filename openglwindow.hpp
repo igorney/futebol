@@ -40,10 +40,14 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   Ground m_ground;
 
   std::vector<Vertex> m_vertices;
-  std::vector<GLuint> m_indices;   
+  std::vector<GLuint> m_indices; 
+
+  SDL_AudioDeviceID m_deviceId;
+  Uint8 *m_wavBuffer;  
 
   void loadModelFromFile(std::string_view path);  
   void update();
+  void initializeSound(std::string path);
 };
 
 #endif
