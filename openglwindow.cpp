@@ -62,7 +62,7 @@ void OpenGLWindow::initializeGL() {
  
   
 
-  m_modelBola.terminateGL();
+  //m_modelBola.terminateGL();
 
   m_ground.initializeGL(m_program);
 
@@ -73,8 +73,7 @@ void OpenGLWindow::initializeGL() {
   // Use material properties from the loaded model
   m_Ka = m_modelBola.getKa();
   m_Kd = m_modelBola.getKd();
-  m_Ks = m_modelBola.getKs();
-  //m_shininess = m_modelBola.getShininess();
+  m_Ks = m_modelBola.getKs(); 
 
   //m_mappingMode = 3;
 
@@ -86,11 +85,11 @@ void OpenGLWindow::initializeGL() {
 
   //m_modelBola.setupVAO(m_program);
   //m_modelJogador.setupVAO(m_program);
- //m_modelAviao.setupVAO(m_program);
+  //m_modelAviao.setupVAO(m_program);
   //m_modelJuiz.setupVAO(m_program);
   //m_modelArvore.setupVAO(m_program);  
 
-  initializeSound(getAssetsPath() + "sons/hino.wav");  
+  //initializeSound(getAssetsPath() + "sons/hino.wav");  
 
   resizeGL(getWindowSettings().width, getWindowSettings().height);
 }
