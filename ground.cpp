@@ -47,7 +47,7 @@ void Ground::paintGL() {
 
       // Set color (checkerboard pattern)
       //const float green{(z + x) % 2 == 0 ? 5.0f : 5.5f};
-      abcg::glUniform4f(m_colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);
+      abcg::glUniform4f(m_colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
 
       abcg::glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
