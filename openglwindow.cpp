@@ -53,7 +53,10 @@ void OpenGLWindow::initializeGL() {
   m_programTexture = createProgramFromFile(getAssetsPath() + "shaders/texture.vert",
                                     getAssetsPath() + "shaders/texture.frag");
 
-  //m_ground.initializeGL(m_program);
+  m_programLookat = createProgramFromFile(getAssetsPath() + "shaders/lookat.vert",
+                                          getAssetsPath() + "shaders/lookat.frag");                                  
+
+  m_ground.initializeGL(m_programLookat);
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
   m_modelBola.loadDiffuseTexture(getAssetsPath() + "bola/bola.tga"); 
@@ -124,10 +127,38 @@ void OpenGLWindow::paintGL() {
 
   // Use currently selected program
   //const auto program{m_programs.at(m_currentProgramIndex)};
+
+  abcg::glUseProgram(m_programLookat);
+  paintGLLookat();
+
   abcg::glUseProgram(m_programTexture);
   paintGLTexture();
 
   abcg::glUseProgram(0);
+
+}
+
+void OpenGLWindow::paintGLLookat() {
+  
+
+  // Get location of uniform variables (could be precomputed)
+  const GLint viewMatrixLoc{
+      abcg::glGetUniformLocation(m_programLookat, "viewMatrix")};
+  const GLint projMatrixLoc{
+      abcg::glGetUniformLocation(m_programLookat, "projMatrix")};
+  const GLint modelMatrixLoc{
+      abcg::glGetUniformLocation(m_programLookat, "modelMatrix")};  
+
+  // Set uniform variables for viewMatrix and projMatrix
+  // These matrices are used for every scene object
+  abcg::glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE,
+                           &m_camera.m_viewMatrix[0][0]);
+  abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE,
+                           &m_camera.m_projMatrix[0][0]);
+
+  // Draw ground
+  m_ground.paintGL();
+
 
 }
 
@@ -522,13 +553,14 @@ void OpenGLWindow::terminateGL() {
   m_modelAviao.terminateGL();
   m_modelJuiz.terminateGL();
   m_modelArvore.terminateGL();
-  //m_ground.terminateGL();
+  m_ground.terminateGL();
 
 /*
   for (const auto& program : m_programs) {
     abcg::glDeleteProgram(program);
   }
 */
+  abcg::glDeleteProgram(m_programLookat);  
   abcg::glDeleteProgram(m_programTexture);  
 }
 
