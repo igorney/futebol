@@ -50,16 +50,16 @@ void OpenGLWindow::initializeGL() {
   abcg::glEnable(GL_DEPTH_TEST);
 
   // Create program
-  m_program = createProgramFromFile(getAssetsPath() + "shaders/lookat.vert",
-                                    getAssetsPath() + "shaders/lookat.frag");
+  m_program = createProgramFromFile(getAssetsPath() + "shaders/texture.vert",
+                                    getAssetsPath() + "shaders/texture.frag");
 
-  // Create programs
+  /* Create programs
   for (const auto& name : m_shaderNames) {
     const auto path{getAssetsPath() + "shaders/" + name};
     const auto program{createProgramFromFile(path + ".vert", path + ".frag")};
     m_programs.push_back(program);
-  } 
- 
+  }
+  */
   
 
   //m_modelBola.terminateGL();
@@ -67,29 +67,36 @@ void OpenGLWindow::initializeGL() {
   m_ground.initializeGL(m_program);
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
-  m_modelBola.loadDiffuseTexture(getAssetsPath() + "bola/bola.jpg"); 
-  m_modelBola.setupVAO(m_programs.at(m_currentProgramIndex));
-  //m_trianglesToDraw = m_model.getNumTriangles();
-  // Use material properties from the loaded model
+  m_modelBola.loadDiffuseTexture(getAssetsPath() + "bola/bola.tga"); 
+  m_modelBola.setupVAO(m_program);
   m_Ka = m_modelBola.getKa();
   m_Kd = m_modelBola.getKd();
   m_Ks = m_modelBola.getKs(); 
 
-  //m_mappingMode = 3;
+
+  m_modelAviao.loadObj(getAssetsPath() + "aviao/aviao.obj");
+  m_modelAviao.loadDiffuseTexture(getAssetsPath() + "aviao/11803_Airplane_body_diff.jpg"); 
+  m_modelAviao.setupVAO(m_program);
+  m_Ka = m_modelAviao.getKa();
+  m_Kd = m_modelAviao.getKd();
 
 
-  //m_modelJogador.loadObj(getAssetsPath() + "jogador/jogador.obj");
-  //m_modelAviao.loadObj(getAssetsPath() + "aviao/aviao.obj");
-  //m_modelJuiz.loadObj(getAssetsPath() + "juiz/juiz.obj");
-  //m_modelArvore.loadObj(getAssetsPath() + "arvore/arvore.obj");  
+  m_modelArvore.loadObj(getAssetsPath() + "arvore/arvore.obj");
+  m_modelArvore.loadDiffuseTexture(getAssetsPath() + "arvore/arvore.jpeg"); 
+  m_modelArvore.setupVAO(m_program);
+  m_Ks = m_modelArvore.getKs(); 
 
-  //m_modelBola.setupVAO(m_program);
-  //m_modelJogador.setupVAO(m_program);
-  //m_modelAviao.setupVAO(m_program);
-  //m_modelJuiz.setupVAO(m_program);
-  //m_modelArvore.setupVAO(m_program);  
+  m_modelJuiz.loadObj(getAssetsPath() + "juiz/juiz.obj");
+  m_modelJuiz.loadDiffuseTexture(getAssetsPath() + "juiz/juiz.jpg"); 
+  m_modelJuiz.setupVAO(m_program);
+  m_Ka = m_modelJuiz.getKa();
+  m_Kd = m_modelJuiz.getKd();
+  
 
-  //initializeSound(getAssetsPath() + "sons/hino.wav");  
+  m_modelJogador.loadObj(getAssetsPath() + "jogador/jogador.obj");
+  m_modelJogador.setupVAO(m_program);
+
+  initializeSound(getAssetsPath() + "sons/hino.wav");  
 
   resizeGL(getWindowSettings().width, getWindowSettings().height);
 }
@@ -127,33 +134,33 @@ void OpenGLWindow::paintGL() {
   abcg::glViewport(0, 0, m_viewportWidth, m_viewportHeight);
 
   // Use currently selected program
-  const auto program{m_programs.at(m_currentProgramIndex)};
-  abcg::glUseProgram(program);
+  //const auto program{m_programs.at(m_currentProgramIndex)};
+  abcg::glUseProgram(m_program);
 
 
   //abcg::glUseProgram(m_program);
 
   // Get location of uniform variables (could be precomputed)
-  const GLint viewMatrixLoc{abcg::glGetUniformLocation(program, "viewMatrix")};
-  const GLint projMatrixLoc{abcg::glGetUniformLocation(program, "projMatrix")};
+  const GLint viewMatrixLoc{abcg::glGetUniformLocation(m_program, "viewMatrix")};
+  const GLint projMatrixLoc{abcg::glGetUniformLocation(m_program, "projMatrix")};
   const GLint modelMatrixLoc{
-      abcg::glGetUniformLocation(program, "modelMatrix")};
-  const GLint colorLoc{abcg::glGetUniformLocation(program, "color")};
+      abcg::glGetUniformLocation(m_program, "modelMatrix")};
+  const GLint colorLoc{abcg::glGetUniformLocation(m_program, "color")};
   const GLint normalMatrixLoc{
-      abcg::glGetUniformLocation(program, "normalMatrix")};
+      abcg::glGetUniformLocation(m_program, "normalMatrix")};
   const GLint lightDirLoc{
-      abcg::glGetUniformLocation(program, "lightDirWorldSpace")};
+      abcg::glGetUniformLocation(m_program, "lightDirWorldSpace")};
   //const GLint shininessLoc{abcg::glGetUniformLocation(program, "shininess")};
-  const GLint IaLoc{abcg::glGetUniformLocation(program, "Ia")};
-  const GLint IdLoc{abcg::glGetUniformLocation(program, "Id")};
-  const GLint IsLoc{abcg::glGetUniformLocation(program, "Is")};
-  const GLint KaLoc{abcg::glGetUniformLocation(program, "Ka")};
-  const GLint KdLoc{abcg::glGetUniformLocation(program, "Kd")};
-  const GLint KsLoc{abcg::glGetUniformLocation(program, "Ks")};
-  const GLint diffuseTexLoc{abcg::glGetUniformLocation(program, "diffuseTex")};
-  const GLint normalTexLoc{abcg::glGetUniformLocation(program, "normalTex")};
+  const GLint IaLoc{abcg::glGetUniformLocation(m_program, "Ia")};
+  const GLint IdLoc{abcg::glGetUniformLocation(m_program, "Id")};
+  const GLint IsLoc{abcg::glGetUniformLocation(m_program, "Is")};
+  const GLint KaLoc{abcg::glGetUniformLocation(m_program, "Ka")};
+  const GLint KdLoc{abcg::glGetUniformLocation(m_program, "Kd")};
+  const GLint KsLoc{abcg::glGetUniformLocation(m_program, "Ks")};
+  const GLint diffuseTexLoc{abcg::glGetUniformLocation(m_program, "diffuseTex")};
+  const GLint normalTexLoc{abcg::glGetUniformLocation(m_program, "normalTex")};
   const GLint mappingModeLoc{
-      abcg::glGetUniformLocation(program, "mappingMode")};
+      abcg::glGetUniformLocation(m_program, "mappingMode")};
 
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
@@ -185,7 +192,7 @@ void OpenGLWindow::paintGL() {
   abcg::glUniform4fv(KsLoc, 1, &m_Ks.x);
 
 
-  // bola vermelha
+  // bola
   glm::mat4 model{1.0f};
   model = glm::translate(model, glm::vec3(0.0f, 0.2f, 2.0f));  
   model = glm::scale(model, glm::vec3(0.25f));
@@ -194,8 +201,36 @@ void OpenGLWindow::paintGL() {
   abcg::glUniform4f(colorLoc,  1.0f, 0.25f, 0.25f, 1.0f);  
   m_modelBola.render();
 
-  // time azul  
-  /*model = glm::mat4(1.0);
+  //aviao
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(-0.3f, 2.0f, 0.0f));  
+  model = glm::scale(model, glm::vec3(0.4f));
+
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 0.0f);  
+  m_modelAviao.render(); 
+
+  //arvore
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(-4.0f, 0.5f, 0.0f));  
+  model = glm::scale(model, glm::vec3(1.0f));
+
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
+  m_modelArvore.render(); 
+
+  //juiz
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(0.0f, 0.5f, 1.0f));  
+  model = glm::scale(model, glm::vec3(0.8f));
+
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 255.0f, 255.0f, 0.0f, 1.0f);  
+  m_modelJuiz.render(); 
+
+
+  // time azul 
+  model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(1.0f, 0.5f, 1.0f));  
   model = glm::scale(model, glm::vec3(0.6f));
 
@@ -203,17 +238,19 @@ void OpenGLWindow::paintGL() {
   abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);  
   m_modelJogador.render();  
   
+  
+  
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(2.0f, 0.5f, 1.0f));  
   model = glm::scale(model, glm::vec3(0.6f));
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);   
-  m_modelJogador.render();   */               
+  m_modelJogador.render(); 
   
 
   // time verde
-  /*model = glm::mat4(1.0);
+  model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(-2.0f, 0.5f, 1.0f));  
   model = glm::scale(model, glm::vec3(0.6f));
 
@@ -228,30 +265,6 @@ void OpenGLWindow::paintGL() {
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);  
   m_modelJogador.render(); 
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(0.0f, 0.5f, 1.0f));  
-  model = glm::scale(model, glm::vec3(0.8f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 255.0f, 255.0f, 0.0f, 1.0f);  
-  m_modelJuiz.render(); 
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(-0.3f, 2.0f, 0.0f));  
-  model = glm::scale(model, glm::vec3(0.4f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 0.0f);  
-  m_modelAviao.render();   
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(-4.0f, 0.5f, 0.0f));  
-  model = glm::scale(model, glm::vec3(1.0f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
-  m_modelArvore.render(); 
 
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(4.0f, 0.5f, 0.0f));  
@@ -275,7 +288,7 @@ void OpenGLWindow::paintGL() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
-  m_modelArvore.render(); */
+  m_modelArvore.render(); 
 
   // Draw ground
   m_ground.paintGL();
@@ -425,7 +438,7 @@ void OpenGLWindow::paintUI() {
       // Set up VAO if shader program has changed
       if (static_cast<int>(currentIndex) != m_currentProgramIndex) {
         m_currentProgramIndex = currentIndex;
-        m_modelBola.setupVAO(m_programs.at(m_currentProgramIndex));
+        m_modelBola.setupVAO(m_program);
       }
     }
 
@@ -515,17 +528,18 @@ void OpenGLWindow::resizeGL(int width, int height) {
 
 void OpenGLWindow::terminateGL() {
   m_modelBola.terminateGL();
-  //m_modelJogador.terminateGL();
-  //m_modelAviao.terminateGL();
-  //m_modelJuiz.terminateGL();
-  //m_modelArvore.terminateGL();
+  m_modelJogador.terminateGL();
+  m_modelAviao.terminateGL();
+  m_modelJuiz.terminateGL();
+  m_modelArvore.terminateGL();
   m_ground.terminateGL();
 
+/*
   for (const auto& program : m_programs) {
     abcg::glDeleteProgram(program);
   }
-
-  //abcg::glDeleteProgram(m_program);  
+*/
+  abcg::glDeleteProgram(m_program);  
 }
 
 void OpenGLWindow::update() {
