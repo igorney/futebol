@@ -19,7 +19,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   void terminateGL() override;
 
  private:  
-  GLuint m_program;
+  GLuint m_programTexture;
   //GLuint m_programTexture{};
   //GLuint m_programBlinnPhong{};
   //GLuint m_programPhong{};
