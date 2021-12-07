@@ -53,17 +53,6 @@ void OpenGLWindow::initializeGL() {
   m_programTexture = createProgramFromFile(getAssetsPath() + "shaders/texture.vert",
                                     getAssetsPath() + "shaders/texture.frag");
 
-  /* Create programs
-  for (const auto& name : m_shaderNames) {
-    const auto path{getAssetsPath() + "shaders/" + name};
-    const auto program{createProgramFromFile(path + ".vert", path + ".frag")};
-    m_programs.push_back(program);
-  }
-  */
-  
-
-  //m_modelBola.terminateGL();
-
   //m_ground.initializeGL(m_program);
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
@@ -136,9 +125,13 @@ void OpenGLWindow::paintGL() {
   // Use currently selected program
   //const auto program{m_programs.at(m_currentProgramIndex)};
   abcg::glUseProgram(m_programTexture);
+  paintGLTexture();
 
-  
+  abcg::glUseProgram(0);
 
+}
+
+void OpenGLWindow::paintGLTexture() {
   // Get location of uniform variables (could be precomputed)
   const GLint viewMatrixLoc{abcg::glGetUniformLocation(m_programTexture, "viewMatrix")};
   const GLint projMatrixLoc{abcg::glGetUniformLocation(m_programTexture, "projMatrix")};
@@ -235,9 +228,7 @@ void OpenGLWindow::paintGL() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);  
-  m_modelJogador.render();  
-  
-  
+  m_modelJogador.render(); 
   
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(2.0f, 0.5f, 1.0f));  
@@ -292,7 +283,7 @@ void OpenGLWindow::paintGL() {
   // Draw ground
   //m_ground.paintGL();
 
-  abcg::glUseProgram(0);
+  
 }
 
 void OpenGLWindow::paintUI() { 

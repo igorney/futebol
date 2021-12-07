@@ -18,9 +18,9 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   void resizeGL(int width, int height) override;
   void terminateGL() override;
 
- private:  
-  GLuint m_programTexture;
-  //GLuint m_programTexture{};
+ private:
+  GLuint m_programLookat; 
+  GLuint m_programTexture; 
   //GLuint m_programBlinnPhong{};
   //GLuint m_programPhong{};
   //GLuint m_programGouraud{};
@@ -78,7 +78,9 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   //float m_shininess{};
 
 
-  void loadModelFromFile(std::string_view path);  
+  void loadModelFromFile(std::string_view path);
+  void paintGLTexture();
+  void paintGLLookat();
   void update();
   void initializeSound(std::string path);
 };
