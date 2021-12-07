@@ -71,7 +71,6 @@ void OpenGLWindow::initializeGL() {
   m_modelBola.setupVAO(m_program);
   m_Ka = m_modelBola.getKa();
   m_Kd = m_modelBola.getKd();
-  m_Ks = m_modelBola.getKs(); 
 
 
   m_modelAviao.loadObj(getAssetsPath() + "aviao/aviao.obj");
@@ -91,6 +90,7 @@ void OpenGLWindow::initializeGL() {
   m_modelJuiz.setupVAO(m_program);
   m_Ka = m_modelJuiz.getKa();
   m_Kd = m_modelJuiz.getKd();
+  m_Ks = m_modelJuiz.getKs(); 
   
 
   m_modelJogador.loadObj(getAssetsPath() + "jogador/jogador.obj");
