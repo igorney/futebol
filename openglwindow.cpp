@@ -138,16 +138,13 @@ void OpenGLWindow::paintGL() {
 
 }
 
-void OpenGLWindow::paintGLLookat() {
-  
+void OpenGLWindow::paintGLLookat() {  
 
   // Get location of uniform variables (could be precomputed)
   const GLint viewMatrixLoc{
       abcg::glGetUniformLocation(m_programLookat, "viewMatrix")};
   const GLint projMatrixLoc{
-      abcg::glGetUniformLocation(m_programLookat, "projMatrix")};
-  const GLint modelMatrixLoc{
-      abcg::glGetUniformLocation(m_programLookat, "modelMatrix")};  
+      abcg::glGetUniformLocation(m_programLookat, "projMatrix")};  
 
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
@@ -158,7 +155,6 @@ void OpenGLWindow::paintGLLookat() {
 
   // Draw ground
   m_ground.paintGL();
-
 
 }
 
@@ -172,8 +168,7 @@ void OpenGLWindow::paintGLTexture() {
   const GLint normalMatrixLoc{
       abcg::glGetUniformLocation(m_programTexture, "normalMatrix")};
   const GLint lightDirLoc{
-      abcg::glGetUniformLocation(m_programTexture, "lightDirWorldSpace")};
-  //const GLint shininessLoc{abcg::glGetUniformLocation(program, "shininess")};
+      abcg::glGetUniformLocation(m_programTexture, "lightDirWorldSpace")}; 
   const GLint IaLoc{abcg::glGetUniformLocation(m_programTexture, "Ia")};
   const GLint IdLoc{abcg::glGetUniformLocation(m_programTexture, "Id")};
   const GLint IsLoc{abcg::glGetUniformLocation(m_programTexture, "Is")};
@@ -181,9 +176,7 @@ void OpenGLWindow::paintGLTexture() {
   const GLint KdLoc{abcg::glGetUniformLocation(m_programTexture, "Kd")};
   const GLint KsLoc{abcg::glGetUniformLocation(m_programTexture, "Ks")};
   const GLint diffuseTexLoc{abcg::glGetUniformLocation(m_programTexture, "diffuseTex")};
-  const GLint normalTexLoc{abcg::glGetUniformLocation(m_programTexture, "normalTex")};
-  const GLint mappingModeLoc{
-      abcg::glGetUniformLocation(m_programTexture, "mappingMode")};
+  const GLint normalTexLoc{abcg::glGetUniformLocation(m_programTexture, "normalTex")};  
 
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
@@ -193,8 +186,7 @@ void OpenGLWindow::paintGLTexture() {
                            &m_camera.m_projMatrix[0][0]);
 
   abcg::glUniform1i(diffuseTexLoc, 0);
-  abcg::glUniform1i(normalTexLoc, 1);
-  abcg::glUniform1i(mappingModeLoc, m_mappingMode);
+  abcg::glUniform1i(normalTexLoc, 1); 
 
   const auto lightDirRotated{m_camera.m_projMatrix * m_lightDir};
   abcg::glUniform4fv(lightDirLoc, 1, &lightDirRotated.x);
@@ -209,7 +201,6 @@ void OpenGLWindow::paintGLTexture() {
   glm::mat3 normalMatrix{glm::inverseTranspose(modelViewMatrix)};
   abcg::glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 
-  //abcg::glUniform1f(shininessLoc, m_shininess);
   abcg::glUniform4fv(KaLoc, 1, &m_Ka.x);
   abcg::glUniform4fv(KdLoc, 1, &m_Kd.x);
   abcg::glUniform4fv(KsLoc, 1, &m_Ks.x);

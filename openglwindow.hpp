@@ -75,7 +75,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   glm::vec4 m_Ka{};
   glm::vec4 m_Kd{};
   glm::vec4 m_Ks{};
-  //float m_shininess{};
+  float m_shininess{};
 
 
   void loadModelFromFile(std::string_view path);
