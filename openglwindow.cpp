@@ -176,7 +176,9 @@ void OpenGLWindow::paintGLTexture() {
   const GLint KdLoc{abcg::glGetUniformLocation(m_programTexture, "Kd")};
   const GLint KsLoc{abcg::glGetUniformLocation(m_programTexture, "Ks")};
   const GLint diffuseTexLoc{abcg::glGetUniformLocation(m_programTexture, "diffuseTex")};
-  const GLint normalTexLoc{abcg::glGetUniformLocation(m_programTexture, "normalTex")};  
+  const GLint normalTexLoc{abcg::glGetUniformLocation(m_programTexture, "normalTex")};
+  const GLint mappingModeLoc{
+      abcg::glGetUniformLocation(m_programTexture, "mappingMode")};
 
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
@@ -186,7 +188,8 @@ void OpenGLWindow::paintGLTexture() {
                            &m_camera.m_projMatrix[0][0]);
 
   abcg::glUniform1i(diffuseTexLoc, 0);
-  abcg::glUniform1i(normalTexLoc, 1); 
+  abcg::glUniform1i(normalTexLoc, 1);
+  abcg::glUniform1i(mappingModeLoc, m_mappingMode);
 
   const auto lightDirRotated{m_camera.m_projMatrix * m_lightDir};
   abcg::glUniform4fv(lightDirLoc, 1, &lightDirRotated.x);
@@ -351,24 +354,7 @@ void OpenGLWindow::paintUI() {
     ImGui::SetNextWindowSize(widgetSize);
     auto flags{ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDecoration};
     ImGui::Begin("Widget window", nullptr, flags);
-
-    // Menu
-    {
-      bool loadModel{};
-      bool loadDiffMap{};
-      bool loadNormalMap{};
-      if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-          ImGui::MenuItem("Load 3D Model...", nullptr, &loadModel);
-          ImGui::MenuItem("Load Diffuse Map...", nullptr, &loadDiffMap);
-          ImGui::MenuItem("Load Normal Map...", nullptr, &loadNormalMap);
-          ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-      }
-      if (loadModel) fileDialogModel.Open();
-      if (loadDiffMap) fileDialogDiffuseMap.Open();
-    }
+    
 
     // Slider will be stretched horizontally
     ImGui::PushItemWidth(widgetSize.x - 16);
@@ -399,60 +385,8 @@ void OpenGLWindow::paintUI() {
       } else {
         abcg::glFrontFace(GL_CW);
       }
-    }
-
-    // Projection combo box
-    {
-      static std::size_t currentIndex{};
-      std::vector<std::string> comboItems{"Perspective", "Orthographic"};
-
-      ImGui::PushItemWidth(120);
-      if (ImGui::BeginCombo("Projection",
-                            comboItems.at(currentIndex).c_str())) {
-        for (auto index : iter::range(comboItems.size())) {
-          const bool isSelected{currentIndex == index};
-          if (ImGui::Selectable(comboItems.at(index).c_str(), isSelected))
-            currentIndex = index;
-          if (isSelected) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-      }
-      ImGui::PopItemWidth();
-
-      const auto aspect{static_cast<float>(m_viewportWidth) /
-                        static_cast<float>(m_viewportHeight)};
-      if (currentIndex == 0) {
-        m_projMatrix =
-            glm::perspective(glm::radians(45.0f), aspect, 0.1f, 5.0f);
-
-      } else {
-        m_projMatrix =
-            glm::ortho(-1.0f * aspect, 1.0f * aspect, -1.0f, 1.0f, 0.1f, 5.0f);
-      }
-    }
-
-    // Shader combo box
-    {
-      static std::size_t currentIndex{};
-
-      ImGui::PushItemWidth(120);
-      if (ImGui::BeginCombo("Shader", m_shaderNames.at(currentIndex))) {
-        for (auto index : iter::range(m_shaderNames.size())) {
-          const bool isSelected{currentIndex == index};
-          if (ImGui::Selectable(m_shaderNames.at(index), isSelected))
-            currentIndex = index;
-          if (isSelected) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-      }
-      ImGui::PopItemWidth();
-
-      // Set up VAO if shader program has changed
-      if (static_cast<int>(currentIndex) != m_currentProgramIndex) {
-        m_currentProgramIndex = currentIndex;
-        m_modelBola.setupVAO(m_programTexture);
-      }
-    }
+    }    
+    
 
     if (!m_modelBola.isUVMapped()) {
       ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh has no UV coords.");
