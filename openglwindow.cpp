@@ -177,8 +177,7 @@ void OpenGLWindow::paintGLTexture() {
       abcg::glGetUniformLocation(m_programTexture, "mappingMode")};
   GLint colorLoc{glGetUniformLocation(m_programTexture, "color")};    
 
-  // Set uniform variables for viewMatrix and projMatrix
-  // These matrices are used for every scene object
+  // Set uniform variables for viewMatrix and projMatrix 
   abcg::glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE,
                            &m_camera.m_viewMatrix[0][0]);
   abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE,
@@ -307,8 +306,7 @@ void OpenGLWindow::paintGLPhong() {
   GLint KdLocPhong{glGetUniformLocation(m_programPhong, "Kd")};
   GLint KsLocPhong{glGetUniformLocation(m_programPhong, "Ks")};
 
-  // Set uniform variables for viewMatrix and projMatrix
-  // These matrices are used for every scene object
+  // Set uniform variables for viewMatrix and projMatrix 
   glUniformMatrix4fv(viewMatrixLocPhong, 1, GL_FALSE, &m_camera.m_viewMatrix[0][0]);
   glUniformMatrix4fv(projMatrixLocPhong, 1, GL_FALSE, &m_camera.m_projMatrix[0][0]);
 
@@ -324,7 +322,7 @@ void OpenGLWindow::paintGLPhong() {
   glUniform4fv(KdLocPhong, 1, &kd.x);
   glUniform4fv(KsLocPhong, 1, &m_Ks.x);
 
-  // Time amarelo
+  // time amarelo
   glm::mat4 model{1.0f};
   model = glm::translate(model, glm::vec3(1.0f, 0.5f, 1.0f)); 
   model = glm::scale(model, glm::vec3(0.6f));
@@ -475,11 +473,6 @@ void OpenGLWindow::terminateGL() {
   m_modelArvore.terminateGL();
   m_ground.terminateGL();
 
-  /*
-    for (const auto& program : m_programs) {
-      abcg::glDeleteProgram(program);
-    }
-  */
   abcg::glDeleteProgram(m_programLookat);
   abcg::glDeleteProgram(m_programTexture);
   abcg::glDeleteProgram(m_programPhong);

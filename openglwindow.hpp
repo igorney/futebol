@@ -21,11 +21,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
  private:
   GLuint m_programLookat; 
   GLuint m_programTexture; 
-  GLuint m_programPhong{};
-  //GLuint m_programBlinnPhong{};
-  //GLuint m_programGouraud{};
-  //GLuint m_programNormal{};
-  //GLuint m_programDepth{};
+  GLuint m_programPhong{};  
 
   int m_viewportWidth{};
   int m_viewportHeight{};
@@ -34,9 +30,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   Model m_modelJogador;
   Model m_modelAviao;
   Model m_modelJuiz;
-  Model m_modelArvore;
-
-  int m_trianglesToDraw{};
+  Model m_modelArvore;  
 
   Camera m_camera;
   float m_dollySpeed{0.0f};
@@ -69,8 +63,6 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   glm::vec4 m_Ks{};
   float m_shininess{};
 
-
-  void loadModelFromFile(std::string_view path);
   void paintGLTexture();
   void paintGLLookat();
   void paintGLPhong();

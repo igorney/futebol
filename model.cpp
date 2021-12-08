@@ -243,7 +243,7 @@ void Model::loadObj(std::string_view path, bool standardize) {
     this->standardize();
   }
 
-   if (!m_hasNormals) {
+  if (!m_hasNormals) {
     computeNormals();
   }
 
