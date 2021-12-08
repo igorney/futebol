@@ -1,4 +1,4 @@
-<h1 align="center"> ⚽ FUTEBOL ⚽</h1>
+<h1 align="center"> ⚽ FUTEBOL_v2 ⚽</h1>
 
 <h4 align="center"> 	
 	Universidade Federal do ABC
@@ -10,7 +10,7 @@
 --- 
 
 ## Descrição do Projeto
-<p>Construção de um projeto 3D utilizando a biblioteca ABCg criada para o curso de Computação Gráfica  e as primitivas que são disponibilizadas pela biblioteca OpenGL. Trata-se de um cenário correspondente ao inicio do jogo, onde, na vida real, os jogadores se posicionam para cantar o hino. No centro, temos o juiz. De um lado, temos o time branco e do outro lado temos o time azul. A bola está localizada na frente do juiz. Também temos árvores ao redor dos times. </p>
+<p>Este projeto é um aperfeiçoamento do projeto 3D entregue como atividade 2 na disciplina de Computação gráfica. Para este, ainda utilizamos a biblioteca ABCg criada para o curso e as primitivas que são disponibilizadas pela biblioteca OpenGL. Trata-se de um cenário correspondente ao inicio do jogo, onde, na vida real, os jogadores se posicionam para cantar o hino. No centro, temos o juiz. De um lado, temos o time amarelo e do outro lado temos o time azul. A bola está localizada na frente do juiz. Também temos árvores ao redor dos times. É possível interagir com o cénario. E, como aperfeiçoamento, os objetos foram construidos utilizando texturas e iluminações que alteram positivamente o cénario. </p>
 
 --- 
 
@@ -23,7 +23,7 @@
 
 No arquivo <b>CMakeLists.txt</b> declara-se o nome do projeto e os executaveis (<b>.cpp</b>).
 
-As classe <b>openglwindow.cpp</b> é onde ocorre a chamada para as funções membros que encontramos nas outras classes: initializeGL, paintGL e terminateGL. 
+As classe <b>openglwindow.cpp</b> é onde ocorre a chamada para as funções membros que encontramos nas outras classes: initializeGL, paintGL e terminateGL. Também nesta classe foi definido funções para construção do chão, jogadores, árvores, juiz, bola e avião, separadas de acordo com o shader utilizado. 
 
 Na função <b>initializeGL</b> da classe <b>openglwindow.cpp</b> é onde é chamado o carregamento dos modelos.
 
@@ -39,7 +39,7 @@ As classes <b>model</b> são responsáveis pela definição dos métodos e atrib
 
 As classes <b>camera</b> são responsáveis pela definição dos métodos e atributos que são necessários para a inicialização da câmera. Estes métodos são chamados na classe <b>openglwindow.cpp</b>.
 
-Na pasta <b>assets</b>, temos os objetos (.obj) que são carregados no cenário. Além dos arquivos, lookat.frag e lookat.vert.
+Na pasta <b>assets</b>, temos os objetos (.obj) que são carregados no cenário, bem como seus arquivos .mtl e imagens, quando utilizadas. Estes arquivos estão organizadas em subpastas de acordo com o objeto desejado. Também nessa pasta, temos os shaders que são utilizados na construção do cénario: lookat.frag e lookat.vert, texture.frag e texture.vert; e, phong.frag e phong.vert. E, por último, a subpasta 'sons' onde encontramos o arquivo de aúdio referente ao hino que é reproduzido no cénario. 
 
 ---
 
@@ -50,6 +50,14 @@ Utilize o teclado para mover-se no cénario:
 <li>Tecla 'a' ou seta esquerda: mover para esquerda. </li>
 <li>Tecla 'd' ou seta direita: mover para direita.</li>
 <li>Tecla 's' ou seta para baixo ou tecla espaço: mover para trás.
+
+Além disso, você pode alterar os parâmetros que são apresentados nos combo box da lateral superior esquerda:
+- Alterar o front face: escolha entre CCW e CW para notar as diferenças no cenário.
+- Alterar o UV mapping: escolha entre triplanar, cylindrical, spherical e from mesh para notar as diferenças no cenário. A alteração será observada no juiz, na árvore, na bola e no avião.
+
+Você também pode alterar os parâmetros de iluminação (Ia, Id e Is) para observar os efeitos na cena - lateral inferior esquerda.
+
+E, por último, alternar para tela cheia, no botão "toggle fullscreen" na lateral inferior direita.
 
 ---
 
