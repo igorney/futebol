@@ -21,8 +21,8 @@ class OpenGLWindow : public abcg::OpenGLWindow {
  private:
   GLuint m_programLookat; 
   GLuint m_programTexture; 
+  GLuint m_programPhong{};
   //GLuint m_programBlinnPhong{};
-  //GLuint m_programPhong{};
   //GLuint m_programGouraud{};
   //GLuint m_programNormal{};
   //GLuint m_programDepth{};
@@ -73,6 +73,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   void loadModelFromFile(std::string_view path);
   void paintGLTexture();
   void paintGLLookat();
+  void paintGLPhong();
   void update();
   void initializeSound(std::string path);
 };

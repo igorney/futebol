@@ -254,16 +254,13 @@ void Model::loadObj(std::string_view path, bool standardize) {
   createBuffers();
 }
 
-void Model::render(GLint ka, GLint kd, GLint ks) {
+void Model::render() {
   abcg::glBindVertexArray(m_VAO);  
 
   abcg::glActiveTexture(GL_TEXTURE0);
   abcg::glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);
 
-  abcg::glUniform4fv(ka, 1, &m_Ka.x);
-  abcg::glUniform4fv(kd, 1, &m_Kd.x);
-  abcg::glUniform4fv(ks, 1, &m_Ks.x);
-
+  
   // Set minification and magnification parameters
   abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

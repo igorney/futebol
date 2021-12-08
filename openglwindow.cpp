@@ -58,6 +58,10 @@ void OpenGLWindow::initializeGL() {
       createProgramFromFile(getAssetsPath() + "shaders/lookat.vert",
                             getAssetsPath() + "shaders/lookat.frag");
 
+  m_programPhong =
+      createProgramFromFile(getAssetsPath() + "shaders/phong.vert",
+                            getAssetsPath() + "shaders/phong.frag");                          
+
   m_ground.initializeGL(m_programLookat);
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
@@ -66,27 +70,21 @@ void OpenGLWindow::initializeGL() {
 
   m_modelAviao.loadObj(getAssetsPath() + "aviao/aviao.obj");
   m_modelAviao.loadDiffuseTexture(getAssetsPath() +
-                                  "aviao/11803_Airplane_body_diff.jpg");
-  m_modelAviao.setupVAO(m_programTexture);
-  // m_Ka = m_modelAviao.getKa();
-  // m_Kd = m_modelAviao.getKd();
+                                  "aviao/aviao.jpg");
+  m_modelAviao.setupVAO(m_programTexture);  
 
   m_modelArvore.loadObj(getAssetsPath() + "arvore/arvore.obj");
   m_modelArvore.loadDiffuseTexture(getAssetsPath() + "arvore/arvore.png");
-  m_modelArvore.setupVAO(m_programTexture);
-  // m_Ks = m_modelArvore.getKs();
+  m_modelArvore.setupVAO(m_programTexture);  
 
   m_modelJuiz.loadObj(getAssetsPath() + "juiz/juiz.obj");
   m_modelJuiz.loadDiffuseTexture(getAssetsPath() + "juiz/juiz.jpg");
-  m_modelJuiz.setupVAO(m_programTexture);
-  // m_Ka = m_modelJuiz.getKa();
-  // m_Kd = m_modelJuiz.getKd();
-  // m_Ks = m_modelJuiz.getKs();
+  m_modelJuiz.setupVAO(m_programTexture);  
 
   m_modelJogador.loadObj(getAssetsPath() + "jogador/jogador.obj");
-  m_modelJogador.setupVAO(m_programTexture);
+  m_modelJogador.setupVAO(m_programPhong);
 
-  // initializeSound(getAssetsPath() + "sons/hino.wav");
+  initializeSound(getAssetsPath() + "sons/hino.wav");
 
   resizeGL(getWindowSettings().width, getWindowSettings().height);
 }
@@ -121,16 +119,16 @@ void OpenGLWindow::paintGL() {
   // Clear color buffer and depth buffer
   abcg::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  abcg::glViewport(0, 0, m_viewportWidth, m_viewportHeight);
-
-  // Use currently selected program
-  // const auto program{m_programs.at(m_currentProgramIndex)};
+  abcg::glViewport(0, 0, m_viewportWidth, m_viewportHeight); 
 
   abcg::glUseProgram(m_programLookat);
   paintGLLookat();
 
   abcg::glUseProgram(m_programTexture);
   paintGLTexture();
+
+  abcg::glUseProgram(m_programPhong);
+  paintGLPhong();
 
   abcg::glUseProgram(0);
 }
@@ -155,29 +153,29 @@ void OpenGLWindow::paintGLLookat() {
 
 void OpenGLWindow::paintGLTexture() {
   // Get location of uniform variables (could be precomputed)
-  const GLint viewMatrixLoc{
+  GLint viewMatrixLoc{
       abcg::glGetUniformLocation(m_programTexture, "viewMatrix")};
-  const GLint projMatrixLoc{
+  GLint projMatrixLoc{
       abcg::glGetUniformLocation(m_programTexture, "projMatrix")};
-  const GLint modelMatrixLoc{
-      abcg::glGetUniformLocation(m_programTexture, "modelMatrix")};
-  const GLint colorLoc{abcg::glGetUniformLocation(m_programTexture, "color")};
-  const GLint normalMatrixLoc{
+  GLint modelMatrixLoc{
+      abcg::glGetUniformLocation(m_programTexture, "modelMatrix")};  
+  GLint normalMatrixLoc{
       abcg::glGetUniformLocation(m_programTexture, "normalMatrix")};
-  const GLint lightDirLoc{
+  GLint lightDirLoc{
       abcg::glGetUniformLocation(m_programTexture, "lightDirWorldSpace")};
-  const GLint IaLoc{abcg::glGetUniformLocation(m_programTexture, "Ia")};
-  const GLint IdLoc{abcg::glGetUniformLocation(m_programTexture, "Id")};
-  const GLint IsLoc{abcg::glGetUniformLocation(m_programTexture, "Is")};
-  const GLint KaLoc{abcg::glGetUniformLocation(m_programTexture, "Ka")};
-  const GLint KdLoc{abcg::glGetUniformLocation(m_programTexture, "Kd")};
-  const GLint KsLoc{abcg::glGetUniformLocation(m_programTexture, "Ks")};
-  const GLint diffuseTexLoc{
+  GLint IaLoc{abcg::glGetUniformLocation(m_programTexture, "Ia")};
+  GLint IdLoc{abcg::glGetUniformLocation(m_programTexture, "Id")};
+  GLint IsLoc{abcg::glGetUniformLocation(m_programTexture, "Is")};
+  GLint KaLoc{abcg::glGetUniformLocation(m_programTexture, "Ka")};
+  GLint KdLoc{abcg::glGetUniformLocation(m_programTexture, "Kd")};
+  GLint KsLoc{abcg::glGetUniformLocation(m_programTexture, "Ks")};
+  GLint diffuseTexLoc{
       abcg::glGetUniformLocation(m_programTexture, "diffuseTex")};
-  const GLint normalTexLoc{
+  GLint normalTexLoc{
       abcg::glGetUniformLocation(m_programTexture, "normalTex")};
-  const GLint mappingModeLoc{
+  GLint mappingModeLoc{
       abcg::glGetUniformLocation(m_programTexture, "mappingMode")};
+  GLint colorLoc{glGetUniformLocation(m_programTexture, "color")};    
 
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
@@ -218,7 +216,7 @@ void OpenGLWindow::paintGLTexture() {
   abcg::glUniform4fv(KaLoc, 1, &ka.x);
   abcg::glUniform4fv(KdLoc, 1, &kd.x);
   abcg::glUniform4fv(KsLoc, 1, &ks.x);
-  m_modelBola.render(KaLoc, KdLoc, KsLoc);
+  m_modelBola.render();
 
   // aviao
   model = glm::mat4(1.0);
@@ -235,7 +233,7 @@ void OpenGLWindow::paintGLTexture() {
   abcg::glUniform4fv(KaLoc, 1, &ka.x);
   abcg::glUniform4fv(KdLoc, 1, &kd.x);
   abcg::glUniform4fv(KsLoc, 1, &ks.x);
-  m_modelAviao.render(KaLoc, KdLoc, KsLoc);
+  m_modelAviao.render();
 
   // arvore
   model = glm::mat4(1.0);
@@ -252,7 +250,7 @@ void OpenGLWindow::paintGLTexture() {
   abcg::glUniform4fv(KaLoc, 1, &ka.x);
   abcg::glUniform4fv(KdLoc, 1, &kd.x);
   abcg::glUniform4fv(KsLoc, 1, &ks.x);
-  m_modelArvore.render(KaLoc, KdLoc, KsLoc);
+  m_modelArvore.render();
 
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(4.0f, 0.5f, 0.0f));
@@ -260,7 +258,7 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);
-  m_modelArvore.render(KaLoc, KdLoc, KsLoc);
+  m_modelArvore.render();
 
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(-4.0f, 0.5f, 2.0f));
@@ -268,7 +266,7 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);
-  m_modelArvore.render(KaLoc, KdLoc, KsLoc);
+  m_modelArvore.render();
 
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(4.0f, 0.5f, 2.0f));
@@ -276,7 +274,7 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);
-  m_modelArvore.render(KaLoc, KdLoc, KsLoc);
+  m_modelArvore.render();
 
   // juiz
   model = glm::mat4(1.0);
@@ -286,42 +284,88 @@ void OpenGLWindow::paintGLTexture() {
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 255.0f, 255.0f, 0.0f, 1.0f);
 
-  m_modelJuiz.render(KaLoc, KdLoc, KsLoc);
-
-  // time azul
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(1.0f, 0.5f, 1.0f));
-  model = glm::scale(model, glm::vec3(0.6f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);
-  m_modelJogador.render(KaLoc, KdLoc, KsLoc);
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(2.0f, 0.5f, 1.0f));
-  model = glm::scale(model, glm::vec3(0.6f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);
-  m_modelJogador.render(KaLoc, KdLoc, KsLoc);
-
-  // time verde
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(-2.0f, 0.5f, 1.0f));
-  model = glm::scale(model, glm::vec3(0.6f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
-  m_modelJogador.render(KaLoc, KdLoc, KsLoc);
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(-1.0f, 0.5f, 1.0f));
-  model = glm::scale(model, glm::vec3(0.6f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
-  m_modelJogador.render(KaLoc, KdLoc, KsLoc);
+  m_modelJuiz.render();
 }
+
+
+void OpenGLWindow::paintGLPhong() {
+
+  // Get location of uniform variables (could be precomputed)
+  GLint viewMatrixLocPhong{glGetUniformLocation(m_programPhong, "viewMatrix")};
+  GLint projMatrixLocPhong{glGetUniformLocation(m_programPhong, "projMatrix")};
+  GLint modelMatrixLocPhong{glGetUniformLocation(m_programPhong, "modelMatrix")};
+  GLint colorLocPhong{glGetUniformLocation(m_programPhong, "color")};
+
+  // Get location of uniform variables
+  GLint normalMatrixLocPhong{glGetUniformLocation(m_programPhong, "normalMatrix")};
+  GLint lightDirLocPhong{glGetUniformLocation(m_programPhong, "lightDirWorldSpace")};
+  GLint shininessLocPhong{glGetUniformLocation(m_programPhong, "shininess")};
+  GLint IaLocPhong{glGetUniformLocation(m_programPhong, "Ia")};
+  GLint IdLocPhong{glGetUniformLocation(m_programPhong, "Id")};
+  GLint IsLocPhong{glGetUniformLocation(m_programPhong, "Is")};
+  GLint KaLocPhong{glGetUniformLocation(m_programPhong, "Ka")};
+  GLint KdLocPhong{glGetUniformLocation(m_programPhong, "Kd")};
+  GLint KsLocPhong{glGetUniformLocation(m_programPhong, "Ks")};
+
+  // Set uniform variables for viewMatrix and projMatrix
+  // These matrices are used for every scene object
+  glUniformMatrix4fv(viewMatrixLocPhong, 1, GL_FALSE, &m_camera.m_viewMatrix[0][0]);
+  glUniformMatrix4fv(projMatrixLocPhong, 1, GL_FALSE, &m_camera.m_projMatrix[0][0]);
+
+  glm::vec4 ka{0.1f, 0.1f, 0.1f, 1.0f};
+  glm::vec4 kd{1.0f, 0.5f, 0.0f, 1.0f};
+  auto lightDirRotated{m_lightDir};
+  glUniform4fv(lightDirLocPhong, 1, &lightDirRotated.x);
+  glUniform1f(shininessLocPhong, 12.5f);
+  glUniform4fv(IaLocPhong, 1, &m_Ia.x);
+  glUniform4fv(IdLocPhong, 1, &m_Id.x);
+  glUniform4fv(IsLocPhong, 1, &m_Is.x);
+  glUniform4fv(KaLocPhong, 1, &ka.x);
+  glUniform4fv(KdLocPhong, 1, &kd.x);
+  glUniform4fv(KsLocPhong, 1, &m_Ks.x);
+
+  // Time amarelo
+  glm::mat4 model{1.0f};
+  model = glm::translate(model, glm::vec3(1.0f, 0.5f, 1.0f)); 
+  model = glm::scale(model, glm::vec3(0.6f));
+
+  glUniformMatrix4fv(modelMatrixLocPhong, 1, GL_FALSE, &model[0][0]);
+
+  auto modelViewMatrix{glm::mat3(m_camera.m_viewMatrix * model)};
+  glm::mat3 normalMatrix{glm::inverseTranspose(modelViewMatrix)};
+  glUniformMatrix3fv(normalMatrixLocPhong, 1, GL_FALSE, &normalMatrix[0][0]);
+  glUniform4f(colorLocPhong, 0.0f, 1.0f, 0.0f, 1.0f);
+
+  m_modelJogador.render();
+
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(2.0f, 0.5f, 1.0f));    
+  model = glm::scale(model, glm::vec3(0.6f));
+
+  glUniformMatrix4fv(modelMatrixLocPhong, 1, GL_FALSE, &model[0][0]);
+  glUniform4f(colorLocPhong, 0.0f, 1.0f, 0.0f, 1.0f);
+  m_modelJogador.render();
+
+  kd = {0.0f, 0.8f, 1.0f, 1.0f};    
+  glUniform4fv(KdLocPhong, 1, &kd.x);  
+
+  //time azul
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(-2.0f, 0.5f, 1.0f));  
+  model = glm::scale(model, glm::vec3(0.6f));
+
+  glUniformMatrix4fv(modelMatrixLocPhong, 1, GL_FALSE, &model[0][0]);
+  glUniform4f(colorLocPhong, 0.0f, 0.8f, 1.0f, 1.0f);
+  m_modelJogador.render();
+
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(-1.0f, 0.5f, 1.0f));      
+  model = glm::scale(model, glm::vec3(0.6f));
+
+  glUniformMatrix4fv(modelMatrixLocPhong, 1, GL_FALSE, &model[0][0]);
+  glUniform4f(colorLocPhong, 0.0f, 0.8f, 1.0f, 1.0f);
+  m_modelJogador.render();  
+} 
 
 void OpenGLWindow::paintUI() {
   abcg::OpenGLWindow::paintUI();
@@ -398,7 +442,7 @@ void OpenGLWindow::paintUI() {
     ImGui::End();
   }
 
-  const auto widgetSize{ImVec2(222, 244)};
+  const auto widgetSize{ImVec2(222, 110)};
   ImGui::SetNextWindowPos(ImVec2(m_viewportWidth - widgetSize.x - 5,
                                  m_viewportHeight - widgetSize.y - 5));
   ImGui::SetNextWindowSize(widgetSize);
@@ -411,18 +455,7 @@ void OpenGLWindow::paintUI() {
   ImGui::ColorEdit3("Ia", &m_Ia.x, ImGuiColorEditFlags_Float);
   ImGui::ColorEdit3("Id", &m_Id.x, ImGuiColorEditFlags_Float);
   ImGui::ColorEdit3("Is", &m_Is.x, ImGuiColorEditFlags_Float);
-  ImGui::PopItemWidth();
-
-  ImGui::Spacing();
-
-  ImGui::Text("Material properties");
-
-  // Slider to control material properties
-  ImGui::PushItemWidth(widgetSize.x - 36);
-  ImGui::ColorEdit3("Ka", &m_Ka.x, ImGuiColorEditFlags_Float);
-  ImGui::ColorEdit3("Kd", &m_Kd.x, ImGuiColorEditFlags_Float);
-  ImGui::ColorEdit3("Ks", &m_Ks.x, ImGuiColorEditFlags_Float);
-  ImGui::PopItemWidth();
+  ImGui::PopItemWidth(); 
 
   ImGui::End();
 }
@@ -449,6 +482,7 @@ void OpenGLWindow::terminateGL() {
   */
   abcg::glDeleteProgram(m_programLookat);
   abcg::glDeleteProgram(m_programTexture);
+  abcg::glDeleteProgram(m_programPhong);
 }
 
 void OpenGLWindow::update() {
