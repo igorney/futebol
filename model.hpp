@@ -23,7 +23,7 @@ class Model {
  public:
   void loadDiffuseTexture(std::string_view path);
   void loadObj(std::string_view path, bool standardize = true);
-  void render();
+  void render(GLint ka, GLint kd, GLint ks);
   void setupVAO(GLuint program);
   void terminateGL();  
 

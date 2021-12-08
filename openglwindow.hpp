@@ -27,14 +27,6 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   //GLuint m_programNormal{};
   //GLuint m_programDepth{};
 
-
-  // Shaders
-  std::vector<const char*> m_shaderNames{
-      "normalmapping", "texture", "blinnphong", "phong",
-      "gouraud",       "normal",  "depth"};
-  std::vector<GLuint> m_programs;
-  int m_currentProgramIndex{};
-
   int m_viewportWidth{};
   int m_viewportHeight{};
 

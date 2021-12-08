@@ -60,35 +60,33 @@ void OpenGLWindow::initializeGL() {
 
   m_modelBola.loadObj(getAssetsPath() + "bola/bola.obj");
   m_modelBola.loadDiffuseTexture(getAssetsPath() + "bola/bola.tga"); 
-  m_modelBola.setupVAO(m_programTexture);
-  m_Ka = m_modelBola.getKa();
-  m_Kd = m_modelBola.getKd();
+  m_modelBola.setupVAO(m_programTexture); 
 
 
   m_modelAviao.loadObj(getAssetsPath() + "aviao/aviao.obj");
   m_modelAviao.loadDiffuseTexture(getAssetsPath() + "aviao/11803_Airplane_body_diff.jpg"); 
   m_modelAviao.setupVAO(m_programTexture);
-  m_Ka = m_modelAviao.getKa();
-  m_Kd = m_modelAviao.getKd();
+  //m_Ka = m_modelAviao.getKa();
+  //m_Kd = m_modelAviao.getKd();
 
 
   m_modelArvore.loadObj(getAssetsPath() + "arvore/arvore.obj");
-  m_modelArvore.loadDiffuseTexture(getAssetsPath() + "arvore/arvore.jpeg"); 
+  m_modelArvore.loadDiffuseTexture(getAssetsPath() + "arvore/arvore.png"); 
   m_modelArvore.setupVAO(m_programTexture);
-  m_Ks = m_modelArvore.getKs(); 
+  //m_Ks = m_modelArvore.getKs(); 
 
   m_modelJuiz.loadObj(getAssetsPath() + "juiz/juiz.obj");
   m_modelJuiz.loadDiffuseTexture(getAssetsPath() + "juiz/juiz.jpg"); 
   m_modelJuiz.setupVAO(m_programTexture);
-  m_Ka = m_modelJuiz.getKa();
-  m_Kd = m_modelJuiz.getKd();
-  m_Ks = m_modelJuiz.getKs(); 
+  //m_Ka = m_modelJuiz.getKa();
+  //m_Kd = m_modelJuiz.getKd();
+  //m_Ks = m_modelJuiz.getKs(); 
   
 
   m_modelJogador.loadObj(getAssetsPath() + "jogador/jogador.obj");
   m_modelJogador.setupVAO(m_programTexture);
 
-  initializeSound(getAssetsPath() + "sons/hino.wav");  
+  //initializeSound(getAssetsPath() + "sons/hino.wav");  
 
   resizeGL(getWindowSettings().width, getWindowSettings().height);
 }
@@ -204,11 +202,7 @@ void OpenGLWindow::paintGLTexture() {
   glm::mat3 normalMatrix{glm::inverseTranspose(modelViewMatrix)};
   abcg::glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 
-  abcg::glUniform4fv(KaLoc, 1, &m_Ka.x);
-  abcg::glUniform4fv(KdLoc, 1, &m_Kd.x);
-  abcg::glUniform4fv(KsLoc, 1, &m_Ks.x);
-
-
+  
   // bola
   glm::mat4 model{1.0f};
   model = glm::translate(model, glm::vec3(0.0f, 0.2f, 2.0f));  
@@ -216,7 +210,15 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc,  1.0f, 0.25f, 0.25f, 1.0f);  
-  m_modelBola.render();
+
+  auto ka = m_modelBola.getKa();
+  auto kd = m_modelBola.getKd();
+  auto ks = m_modelBola.getKs();
+
+  abcg::glUniform4fv(KaLoc, 1, &ka.x);
+  abcg::glUniform4fv(KdLoc, 1, &kd.x);
+  abcg::glUniform4fv(KsLoc, 1, &ks.x);
+  m_modelBola.render(KaLoc,KdLoc,KsLoc);
 
   //aviao
   model = glm::mat4(1.0);
@@ -224,8 +226,16 @@ void OpenGLWindow::paintGLTexture() {
   model = glm::scale(model, glm::vec3(0.4f));
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 0.0f);  
-  m_modelAviao.render(); 
+  abcg::glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 0.0f); 
+
+  ka = m_modelAviao.getKa();
+  kd = m_modelAviao.getKd();
+  ks = m_modelAviao.getKs();
+
+  abcg::glUniform4fv(KaLoc, 1, &ka.x);
+  abcg::glUniform4fv(KdLoc, 1, &kd.x);
+  abcg::glUniform4fv(KsLoc, 1, &ks.x);
+  m_modelAviao.render(KaLoc,KdLoc,KsLoc); 
 
   //arvore
   model = glm::mat4(1.0);
@@ -233,8 +243,40 @@ void OpenGLWindow::paintGLTexture() {
   model = glm::scale(model, glm::vec3(1.0f));
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f); 
+
+  ka = m_modelArvore.getKa();
+  kd = m_modelArvore.getKd();
+  ks = m_modelArvore.getKs();
+
+  abcg::glUniform4fv(KaLoc, 1, &ka.x);
+  abcg::glUniform4fv(KdLoc, 1, &kd.x); 
+  abcg::glUniform4fv(KsLoc, 1, &ks.x); 
+  m_modelArvore.render(KaLoc,KdLoc,KsLoc); 
+
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(4.0f, 0.5f, 0.0f));  
+  model = glm::scale(model, glm::vec3(1.0f));
+
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
-  m_modelArvore.render(); 
+  m_modelArvore.render(KaLoc,KdLoc,KsLoc); 
+
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(-4.0f, 0.5f, 2.0f));  
+  model = glm::scale(model, glm::vec3(1.0f));
+
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
+  m_modelArvore.render(KaLoc,KdLoc,KsLoc); 
+
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(4.0f, 0.5f, 2.0f));  
+  model = glm::scale(model, glm::vec3(1.0f));
+
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
+  m_modelArvore.render(KaLoc,KdLoc,KsLoc); 
 
   //juiz
   model = glm::mat4(1.0);
@@ -242,8 +284,10 @@ void OpenGLWindow::paintGLTexture() {
   model = glm::scale(model, glm::vec3(0.8f));
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 255.0f, 255.0f, 0.0f, 1.0f);  
-  m_modelJuiz.render(); 
+  abcg::glUniform4f(colorLoc, 255.0f, 255.0f, 0.0f, 1.0f); 
+
+  
+  m_modelJuiz.render(KaLoc,KdLoc,KsLoc); 
 
 
   // time azul 
@@ -253,7 +297,7 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);  
-  m_modelJogador.render(); 
+  m_modelJogador.render(KaLoc,KdLoc,KsLoc); 
   
   model = glm::mat4(1.0);
   model = glm::translate(model, glm::vec3(2.0f, 0.5f, 1.0f));  
@@ -261,7 +305,7 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 0.0f, 0.8f, 1.0f, 1.0f);   
-  m_modelJogador.render(); 
+  m_modelJogador.render(KaLoc,KdLoc,KsLoc); 
   
 
   // time verde
@@ -271,7 +315,7 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);  
-  m_modelJogador.render();  
+  m_modelJogador.render(KaLoc,KdLoc,KsLoc);  
  
   model = glm::mat4(1.0);  
   model = glm::translate(model, glm::vec3(-1.0f, 0.5f, 1.0f));  
@@ -279,71 +323,18 @@ void OpenGLWindow::paintGLTexture() {
 
   abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   abcg::glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);  
-  m_modelJogador.render(); 
+  m_modelJogador.render(KaLoc,KdLoc,KsLoc); 
 
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(4.0f, 0.5f, 0.0f));  
-  model = glm::scale(model, glm::vec3(1.0f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
-  m_modelArvore.render(); 
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(-4.0f, 0.5f, 2.0f));  
-  model = glm::scale(model, glm::vec3(1.0f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
-  m_modelArvore.render(); 
-
-  model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(4.0f, 0.5f, 2.0f));  
-  model = glm::scale(model, glm::vec3(1.0f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(colorLoc, 0.0f, 1.0f, 0.0f, 0.0f);  
-  m_modelArvore.render(); 
-
-  // Draw ground
-  //m_ground.paintGL();
-
+  
   
 }
 
 void OpenGLWindow::paintUI() { 
-  abcg::OpenGLWindow::paintUI(); 
-  // File browser for models
-  static ImGui::FileBrowser fileDialogModel;
-  fileDialogModel.SetTitle("Load 3D Model");
-  fileDialogModel.SetTypeFilters({".obj"});
-  fileDialogModel.SetWindowSize(m_viewportWidth * 0.8f,
-                                m_viewportHeight * 0.8f);
-
-  // File browser for textures
-  static ImGui::FileBrowser fileDialogDiffuseMap;
-  fileDialogDiffuseMap.SetTitle("Load Diffuse Map");
-  fileDialogDiffuseMap.SetTypeFilters({".jpg", ".png"});
-  fileDialogDiffuseMap.SetWindowSize(m_viewportWidth * 0.8f,
-                                     m_viewportHeight * 0.8f);
-
-  // File browser for normal maps
-  static ImGui::FileBrowser fileDialogNormalMap;
-  fileDialogNormalMap.SetTitle("Load Normal Map");
-  fileDialogNormalMap.SetTypeFilters({".jpg", ".png"});
-  fileDialogNormalMap.SetWindowSize(m_viewportWidth * 0.8f,
-                                    m_viewportHeight * 0.8f);
-
-// Only in WebGL
-#if defined(__EMSCRIPTEN__)
-  fileDialogModel.SetPwd(getAssetsPath());
-  fileDialogDiffuseMap.SetPwd(getAssetsPath() + "/maps");
-  fileDialogNormalMap.SetPwd(getAssetsPath() + "/maps");
-#endif
+  abcg::OpenGLWindow::paintUI();   
 
   // Create main window widget
   {
-    auto widgetSize{ImVec2(222, 190)};
+    auto widgetSize{ImVec2(220, 90)};
 
     if (!m_modelBola.isUVMapped()) {
       // Add extra space for static text
@@ -385,8 +376,7 @@ void OpenGLWindow::paintUI() {
       } else {
         abcg::glFrontFace(GL_CW);
       }
-    }    
-    
+    }        
 
     if (!m_modelBola.isUVMapped()) {
       ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh has no UV coords.");
@@ -414,55 +404,7 @@ void OpenGLWindow::paintUI() {
     }
 
     ImGui::End();
-  }
-
-  // Create window for light sources
-  if (m_currentProgramIndex < 4) {
-    const auto widgetSize{ImVec2(222, 244)};
-    ImGui::SetNextWindowPos(ImVec2(m_viewportWidth - widgetSize.x - 5,
-                                   m_viewportHeight - widgetSize.y - 5));
-    ImGui::SetNextWindowSize(widgetSize);
-    ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoDecoration);
-
-    ImGui::Text("Light properties");
-
-    // Slider to control light properties
-    ImGui::PushItemWidth(widgetSize.x - 36);
-    ImGui::ColorEdit3("Ia", &m_Ia.x, ImGuiColorEditFlags_Float);
-    ImGui::ColorEdit3("Id", &m_Id.x, ImGuiColorEditFlags_Float);
-    ImGui::ColorEdit3("Is", &m_Is.x, ImGuiColorEditFlags_Float);
-    ImGui::PopItemWidth();
-
-    ImGui::Spacing();
-
-    ImGui::Text("Material properties");
-
-    // Slider to control material properties
-    ImGui::PushItemWidth(widgetSize.x - 36);
-    ImGui::ColorEdit3("Ka", &m_Ka.x, ImGuiColorEditFlags_Float);
-    ImGui::ColorEdit3("Kd", &m_Kd.x, ImGuiColorEditFlags_Float);
-    ImGui::ColorEdit3("Ks", &m_Ks.x, ImGuiColorEditFlags_Float);
-    ImGui::PopItemWidth();
-
-    // Slider to control the specular shininess
-    //ImGui::PushItemWidth(widgetSize.x - 16);
-    //ImGui::SliderFloat("", &m_shininess, 0.0f, 500.0f, "shininess: %.1f");
-    //ImGui::PopItemWidth();
-
-    ImGui::End();
-  }
-
- 
-  fileDialogDiffuseMap.Display();
-  if (fileDialogDiffuseMap.HasSelected()) {
-    m_modelBola.loadDiffuseTexture(fileDialogDiffuseMap.GetSelected().string());
-    fileDialogDiffuseMap.ClearSelected();
-  }
-
-  fileDialogNormalMap.Display();
-  if (fileDialogNormalMap.HasSelected()) {
-    fileDialogNormalMap.ClearSelected();
-  }
+  }  
 }
 
 void OpenGLWindow::resizeGL(int width, int height) {
